@@ -1,0 +1,26 @@
+<%- include("header")%>
+
+
+<div class="container">
+    <h1><%=title%></h1>
+    <p><%=message%></p>
+    <table class="container">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            <%for(let i = 0; i < products.length; i++) { %>
+            <tr>
+                <td><%= products[i].name %></td>
+                <td><%= "$" + products[i].price%></td>
+            </tr>   
+            <% } %>
+        </tbody>
+    </table>       
+</div>
+
+
+<% include("footer") %>
