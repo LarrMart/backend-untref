@@ -11,14 +11,19 @@ app.get("/cursos", (req, res) => {
     res.json(cursos.cursos);
 });
 
-app.get("/cursos/:categoria", (req, res) => {
-    console.log(req.params["categoria"]);
-    res.json(
-        cursos.obtenerCursos(req.params.categoria)
-    );
+app.get("/curso/nombre/:nombre", (req, res) => {
+    res.json(cursos.getCursoPorNombre(req.params.nombre));
 });
 
-app.get("*", (req, res) => {
+app.get("/curso/codigo/:id", (req, res) => {
+    res.json(cursos.getCursoPorID(req.params.id))
+});
+
+app.get("/cursos/:categoria", (req, res) => {
+    res.json(cursos.getCursosPorCategoria(req.params.categoria));
+});
+
+app.get("/*", (req, res) => {
     res.status(404).send("Lo siento, la página que buscas no existe.");
 });
 

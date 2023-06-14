@@ -8,22 +8,40 @@ const cursos = [
     {id: 7, nombre: "Customer Experience", categoria: "Producto"}
 ];
 
-const uniformizar = (categoria) => {
+const uniformizarCategoria = categoria => {
 	let ret = undefined;
-	if(new RegExp("programaci[oó]n", "i"))
+	if(new RegExp("^programaci[oó]n$", "i").test(categoria))
 		ret = "Programación";
-	else if(new RegExp("datos", "i"))
+	else if(new RegExp("^datos$", "i").test(categoria))
 		ret = "Datos";
-	else if(new RegExp("producto", "i"))
+	else if(new RegExp("^producto$", "i").test(categoria))
 		ret = "Producto";
 	return ret;
-}
+};
 
-const getOferta = categoria => {
-	let parametro = uniformizar(categoria);
-	const filtrados = cursos.filter(curso => curso.categoria === parametro);
-	return filtrados || [{id: "Error", descripcion: "No se encontraron coincidencias"}];
-}
+const getOfertaPorID = id => {
+    let cursoElegido = undefined;
+    if(new RegExp(/\d+/).test(id)) { 
+        id = parseInt(id);
+        cursoElegido = cursos.find(curso => curso.id === id);
+    }
+	return cursoElegido || [{id: "Error", descripcion: "No se encontraron coincidencias"}]
+};
+
+const getOfertaPorCategoria = categoria => {
+	let parametro = uniformizarCategoria(categoria);
+	const cursosFiltrados = cursos.filter(curso => curso.categoria === parametro);
+	return cursosFiltrados.length !== 0? 
+        cursosFiltrados : [{id: "Error", descripcion: "No se encontraron coincidencias"}] ;
+};
+
+const getOfertaPorNombre = nombre => {
+    console.log(nombre);
+    let cursoElegido = cursos.find(curso => new RegExp("^" + curso.nombre, "i").test(nombre));
+    return cursoElegido || [{id: "Error", descripcion: "No se encontraron coincidencias"}] ;
+};
 
 exports.cursos = cursos;
-exports.obtenerCursos = getOferta;
+exports.getCursoPorNombre = getOfertaPorNombre;
+exports.getCursosPorCategoria = getOfertaPorCategoria;
+exports.getCursoPorID = getOfertaPorID;
