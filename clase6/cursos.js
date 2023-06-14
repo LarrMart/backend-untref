@@ -19,26 +19,27 @@ const uniformizarCategoria = categoria => {
 	return ret;
 };
 
+const error = () => [{id: "Error", descripcion: "No se encontraron coincidencias"}]
+
 const getOfertaPorID = id => {
     let cursoElegido = undefined;
     if(new RegExp(/\d+/).test(id)) { 
         id = parseInt(id);
         cursoElegido = cursos.find(curso => curso.id === id);
     }
-	return cursoElegido || [{id: "Error", descripcion: "No se encontraron coincidencias"}]
+	return cursoElegido || error();
 };
 
 const getOfertaPorCategoria = categoria => {
 	let parametro = uniformizarCategoria(categoria);
 	const cursosFiltrados = cursos.filter(curso => curso.categoria === parametro);
-	return cursosFiltrados.length !== 0? 
-        cursosFiltrados : [{id: "Error", descripcion: "No se encontraron coincidencias"}] ;
+    console.log(cursosFiltrados)
+	return cursosFiltrados.length !== 0 ? cursosFiltrados : error();
 };
 
 const getOfertaPorNombre = nombre => {
-    console.log(nombre);
-    let cursoElegido = cursos.find(curso => new RegExp("^" + curso.nombre, "i").test(nombre));
-    return cursoElegido || [{id: "Error", descripcion: "No se encontraron coincidencias"}] ;
+    let cursosElegidos = cursos.filter(curso => new RegExp(nombre, "i").test(curso.nombre));
+    return cursosElegidos.length !== 0 ? cursosElegidos : error();
 };
 
 exports.cursos = cursos;
