@@ -1,0 +1,43 @@
+<%- include("components/head") %>
+<body>
+<%- include("components/navbar") %>
+
+<% if(productos[0].id !== "error") { %>
+	<div class="container mt-3">
+		<h1>Resultados</h1>
+		<table class="table table-dark table-striped">
+	  		<thead>
+			    <tr>
+			      <th scope="col">Id</th>
+			      <th scope="col">Nombre</th>
+			      <th scope="col">Importe</th>
+			      <th scope="col">Stock</th>
+			    </tr>
+	  		</thead>
+	  		<tbody>
+
+	  			<% for(let i = 0; i < productos.length ; i++) { %>
+	  				<tr>
+			      		<th scope="row"><%= productos[i].id %></th>
+			      		<td><%= productos[i].nombre %></td>
+			      		<td><%= "$ " + productos[i].importe %></td>
+			      		<td><%= productos[i].stock %></td>
+			    	</tr>
+
+	  			<% } %>
+			    
+		  	</tbody>
+		</table>
+	</div>
+
+<% } else { %>
+	<div class="container mt-3">
+		<h1><%= productos[0].descripcion %></h1>
+	</div>
+
+<% } %>
+
+
+
+</body>
+<%- include("components/foot") %>

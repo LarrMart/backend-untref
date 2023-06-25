@@ -33,7 +33,6 @@ const getOfertaPorID = id => {
 const getOfertaPorCategoria = categoria => {
 	let parametro = uniformizarCategoria(categoria);
 	const cursosFiltrados = cursos.filter(curso => curso.categoria === parametro);
-    console.log(cursosFiltrados)
 	return cursosFiltrados.length !== 0 ? cursosFiltrados : error();
 };
 

@@ -1,20 +1,18 @@
 {
-  "name": "clase6",
+  "name": "clase8",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "nodemon src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "ejs": "^3.1.9",
     "express": "^4.18.2",
     "nodemon": "^2.0.22"
-  },
-  "devDependencies": {
-    "ejs": "^3.1.9"
   }
 }

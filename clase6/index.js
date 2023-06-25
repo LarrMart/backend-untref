@@ -3,12 +3,17 @@ const cursos = require("./cursos.js");
 const app = express();
 const PORT = 3000;
 
+app.set('view engine', 'ejs');
+app.use(express.static("views"));
+
 app.get("/", (req, res) => {
-    res.send("Bienvenidos al servidor web con rutas dinámicas");
+    //res.send("Bienvenidos al servidor web con rutas dinámicas");
+    res.render("index.ejs", {pageTitle: "Tu curso"});
 });
 
 app.get("/cursos", (req, res) => {
     res.json(cursos.cursos);
+    
 });
 
 app.get("/curso/nombre/:nombre", (req, res) => {
@@ -16,7 +21,7 @@ app.get("/curso/nombre/:nombre", (req, res) => {
 });
 
 app.get("/curso/codigo/:id", (req, res) => {
-    res.json(cursos.getCursoPorID(req.params.id))
+    res.json(cursos.getCursoPorID(req.params.id));
 });
 
 app.get("/cursos/:categoria", (req, res) => {

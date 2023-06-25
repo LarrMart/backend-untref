@@ -1,20 +1,16 @@
 {
-  "name": "clase6",
+  "name": "clase7",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
+	"start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "author": "Guillermo Larroca Martínez",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
     "nodemon": "^2.0.22"
-  },
-  "devDependencies": {
-    "ejs": "^3.1.9"
   }
 }
