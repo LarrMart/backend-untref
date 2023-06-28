@@ -1,10 +1,11 @@
 const fileManager = require("./fileManager.js");
 const path        = require("path");
 let products      = undefined;
-let filePath      = path.join(__dirname, "/database/frutas.json");
+const dotenv	  = require("dotenv");
+dotenv.config();
+let filePath      = path.join(__dirname, process.env.DATABASE_PATH);
 
 const noMatches = () => [{id: "error", descripcion: "No se encontraron coincidencias"}];
-
 
 //revisa que el prod. tenga las claves esperadas y en el mismo orden.
 const hasSameKeys = prod => {
@@ -18,7 +19,7 @@ const isInList = prod => {
 }
 
 
-//interface
+//interface --------------------------------------------------------------------------------------------------------------------------
 const load = () => {
 	products = JSON.parse(fileManager.read(filePath));
 }
@@ -38,22 +39,43 @@ const getProductsByName = name => {
 }
 
 const add = prod => {
-	let ret = "Se agregó el producto satifactoriamente";
+	let ret = prod;
 	if(hasSameKeys(prod)) {
 		if(!isInList(prod)) {
 			products.push(prod);
 			fileManager.save(filePath, JSON.stringify(products));
 		}
-		ret = "El ID del producto ya existe en la base de datos";
+		ret = {"id": "error", "descripcion": "No se agregó el producto. El ID ya existe en la base de datos"};
 	} else {
-		ret = "No se agregó el producto. Formatee correctamente los datos."
+		ret = {"id": "error", "descripcion": "No se agregó el producto. Formatee correctamente los datos."};
 	}
 	return ret;
 }
 
-// load();
-// add({"id":18, "imagen": undefined, "nombre": "Guillermo", "importe": 3000, "stock": 1});
+const update = prod => {
+	let ret = prod;
+	if(hasSameKeys(prod)) {
+		let position = products.findIndex(product => product.id == prod.id);
+		if(position !== -1) {
+			products.splice(position, 1, prod);
+			fileManager.save(filePath, JSON.stringify(products));
+		} else {
+			ret = {"id": "error", "descripcion": "El producto que desea actualizar no se encuentra en la base de datos."};
+		}	
+	} else {
+		ret = {"id": "error", "descripcion": "No se actualizó el producto. Formatee correctamente los datos."};
+	}
+	return ret;
+}
 
-// console.log(list());
+const remove = id => {
+	let position = products.findIndex(product => product.id == id);
+	let ret = {"id": "error", "descripcion": "El producto que desea borrar no se encuentra en la base de datos."};
+	if(position !== -1) {
+		ret = products.splice(position, 1);
+		fileManager.save(filePath, JSON.stringify(products));
+	}	
+	return ret;
+}
 
-module.exports = {add, load, getProductsByName, getProductByID, list};
+module.exports = {add, load, getProductsByName, getProductByID, list, update, remove};
