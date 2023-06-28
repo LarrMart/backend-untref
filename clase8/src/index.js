@@ -7,7 +7,7 @@ const PORT      = 3000;
 productos.cargar();
 
 app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "vistas"));
+app.set("views", path.join(__dirname, "views"));
 
 app.get("/productos", (req, res) => {
 	res.render("productos", {productos: productos.listar()});

@@ -1,11 +1,12 @@
 const fileManager = require("./fileManager.js");
 const path = require("path");
 let productos = undefined;
+let rutaArchivo = path.join(__dirname, "database/products.json");
 
 const sinCoincidencias = () => [{id: "error", descripcion: "No se encontraron coincidencias"}];
 
 const cargar = () => {
-	productos = JSON.parse(fileManager.leerArchivo(path.join(__dirname, "database/products.json")));
+	productos = JSON.parse(fileManager.leerArchivo(rutaArchivo));
 }
 
 const listar = () => productos;
