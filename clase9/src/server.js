@@ -6,30 +6,40 @@ const products   = require('./products.js');
 const app        = express();
 const PORT       = process.env.PORT || 3000;
 
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, process.env.VIEWS_PATH));
 app.use(express.json())
-
 products.load();
 
-app.get("/:id", (req, res) => {
-	res.json(products.getProductByID(req.params.id))
+//--------------------------------------------- Rutas pedidas en el TP -----------------------------
+
+app.get("/fruta/:id", (req, res) => {
+	const result = products.getProductByID(req.params.id);
+	res.status(result.status || 200).json(result);
 });
 
-app.get("/frutas", (req, res) => {
-	res.json(products.list());
-});
-
-app.post("/", (req, res) => {
-	res.json(products.add(req.body));
-});
-
-app.put("/", (req, res) => {
-	res.json(products.update(req.body));
+app.put("/:id", (req, res) => { 
+	const result = products.update(req.params.id, req.body);
+	res.status(result.status || 200).json(result);
 });
 
 app.delete("/:id", (req, res) => {
-	res.json(products.remove(req.params.id));
+	const result = products.remove(req.params.id);
+	res.status(result.status || 200).json(result);
+});
+
+//--------------------------------------------------------------------------------------------------------
+
+app.post("/", (req, res) => {
+	const result = products.add(req.body);
+	res.status(result.status || 201).json(result);
+});
+
+app.get("/fruta/:nombre", (req, res) => {
+	const result = products.getProductsByName(req.params.nombre);
+	res.status(result.status || 200).json(result);
+});
+
+app.get("/frutas", (req, res) => {
+	res.status(200).json(products.list());
 });
 
 app.get("*", (req, res) => {

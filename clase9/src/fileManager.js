@@ -14,7 +14,6 @@ const read = filePath => {
 const save = (filePath, data) => {
 	try {
 		fs.writeFileSync(filePath.trim(), data); 
-		console.log("Archivo escrito correctamente");
 	}
 	catch(err) {
 		console.log(err);
