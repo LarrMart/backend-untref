@@ -11,38 +11,38 @@ products.load();
 
 //--------------------------------------------- Rutas pedidas en el TP -----------------------------
 
-app.get("/fruta/:id", (req, res) => {
+app.get("/obtener/:id", (req, res) => {
 	const result = products.getProductByID(req.params.id);
 	res.status(result.status || 200).json(result);
 });
 
-app.put("/:id", (req, res) => { 
+app.put("/actualizar/:id", (req, res) => { 
 	const result = products.update(req.params.id, req.body);
 	res.status(result.status || 200).json(result);
 });
 
-app.delete("/:id", (req, res) => {
+app.delete("/eliminar/:id", (req, res) => {
 	const result = products.remove(req.params.id);
 	res.status(result.status || 200).json(result);
 });
 
 //--------------------------------------------------------------------------------------------------------
 
-app.post("/", (req, res) => {
+app.post("/agregar", (req, res) => {
 	const result = products.add(req.body);
 	res.status(result.status || 201).json(result);
 });
 
-app.get("/fruta/:nombre", (req, res) => {
+app.get("/obtener-por-nombre/:nombre", (req, res) => {
 	const result = products.getProductsByName(req.params.nombre);
 	res.status(result.status || 200).json(result);
 });
 
-app.get("/frutas", (req, res) => {
+app.get("/listado", (req, res) => {
 	res.status(200).json(products.list());
 });
 
-app.get("*", (req, res) => {
+app.all("*", (req, res) => {
 	res.status(404).json({"id": "error", "descripcion": "El recurso solicitado no existe."});
 });
 

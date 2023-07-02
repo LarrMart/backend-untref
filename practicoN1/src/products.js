@@ -3,7 +3,9 @@ const path        = require("path");
 let products      = undefined;
 const dotenv	  = require("dotenv");
 dotenv.config();
-let filePath      = path.join(__dirname, process.env.DATABASE_PATH);
+let dbFilePath    = path.join(__dirname, process.env.DATABASE_PATH);
+let idDBFilePath  = path.join(__dirname, process.env.ID_DB_PATH);
+let idCounter     = undefined;
 
 //INTERFAZ //--------------------------------------------------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -26,7 +28,7 @@ const update = (id, prod) => {
 		if(position !== -1) {
 			ret = prod;
 			products.splice(position, 1, prod);
-			fileManager.save(filePath, JSON.stringify(products));
+			fileManager.save(dbFilePath, JSON.stringify(products));
 		} else 
 			ret = {"id": "error", "status": 404, "descripcion": "El producto que desea actualizar no se encuentra en la base de datos."};	
 	} else 
@@ -37,33 +39,38 @@ const update = (id, prod) => {
 // PEDIDO EN EL PRÁCTICO
 const remove = id => {
 	let position = products.findIndex(product => product.id == id);
-	let ret = {"id": "error", "status": 404, "descripcion": "El producto que desea borrar no se encuentra en la base de datos."};
+	let ret = {"id": "error", "status": 404, "descripcion": "El producto que desea eliminar no se encuentra en la base de datos."};
 	if(position !== -1) {
 		ret = products.splice(position, 1);
-		fileManager.save(filePath, JSON.stringify(products));
+		fileManager.save(dbFilePath, JSON.stringify(products));
 	}	
 	return ret;
 }
 
-const load = () => products = JSON.parse(fileManager.read(filePath));
+const load = () => {
+	products = JSON.parse(fileManager.read(dbFilePath));
+	idCounter = JSON.parse(fileManager.read(idDBFilePath));  
+}															
 
 const list = () => products;
 	
 const getProductsByName = name => {
-	const productMatches = products.filter(product => new RegExp(name, "i").test(producto.nombre));
+	const productMatches = products.filter(product => new RegExp(name, "i").test(product.nombre));
 	return productMatches.length !== 0 ? productMatches : noMatches();
 }
 
 const add = prod => {
 	let ret = undefined;
 	if(hasSameKeys(prod)) {
-		prod = {id: products.length + 1, ...prod};
 		let position = products.findIndex(product => product.nombre == prod.nombre);
 		if(position === -1) {
+			++idCounter.id;
+			prod = {id: idCounter.id, ...prod};
 			ret = prod;
 			products.push(prod);
-			fileManager.save(filePath, JSON.stringify(products));
-		} else
+			fileManager.save(dbFilePath, JSON.stringify(products));
+			fileManager.save(idDBFilePath, JSON.stringify(idCounter)); //guardo el id en un archivo para que este sea siempre distinto
+		} else														  // y no se pierda cuando se reinicia el servidor
 			ret = {"id": "error", "status": 400, "descripcion": "No se agregó el producto, este ya existe en la base de datos."};
 	} else {
 		ret = {"id": "error", "status": 409, "descripcion": "No se agregó el producto. Formatee correctamente los datos."};
