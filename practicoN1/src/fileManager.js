@@ -20,4 +20,6 @@ const save = (filePath, data) => {
 	}
 }
 
-module.exports = {read, save};
+const exists = filePath => fs.existsSync(filePath);
+
+module.exports = {exists, read, save};

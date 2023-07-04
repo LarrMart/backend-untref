@@ -49,7 +49,14 @@ const remove = id => {
 
 const load = () => {
 	products = JSON.parse(fileManager.read(dbFilePath));
-	idCounter = JSON.parse(fileManager.read(idDBFilePath));  
+	if(!fileManager.exists(idDBFilePath)) {
+		idCounter = {
+			"id": products[products.length - 1].id
+		}
+		fileManager.save(idDBFilePath, JSON.stringify(idCounter));
+	}
+	else
+		idCounter = JSON.parse(fileManager.read(idDBFilePath));  
 }															
 
 const list = () => products;
