@@ -5,9 +5,9 @@ const list = async () => {
 	const client   = await db_connector.connect();
 	if(client) {
 		const db = client.db("products");
-		const frutas = await db.collection("frutas").find().toArray();
-		ret = {"results": frutas, "status": 200}
-		console.log(ret);
+		const frutas = await db.collection("fruits").find().toArray();
+		ret = {"result": frutas, "status": 200}
+		
 		await db_connector.disconnect()	;
 	}
 	return ret;
@@ -18,26 +18,26 @@ const getProductsByName = async name => {
 	const client = await db_connector.connect();
 	if(client) {
 		const db = client.db("products");
-		const frutas = await db.collection("frutas").find({"nombre": {$regex: name, $options: "i"}}).toArray();
-		ret = frutas.length !== 0 ? {"results": frutas, "status": 200} : noMatches();
-		console.log(ret);
+		const fruits = await db.collection("fruits").find({"nombre": {$regex: name, $options: "i"}}).toArray();
+		ret = fruits.length !== 0 ? {"result": fruits, "status": 200} : noMatches();
+		
 		await db_connector.disconnect()	;
 	}
 	return ret;
 }
 
 const getProductById = async id => {
-	let ret = {"result": "error", "status": 409, "id": "El id tiene que ser un número entero"};
+	let ret = {"result": "error", "status": 409, "description": "El id tiene que ser un número entero positivo"};
 	id = parseInt(id);
 
-	if(id) {
+	if(id && id > 0) {
 		const client   = await db_connector.connect();
 		ret = connectionFailed;
 		if(client) {
 			const db = client.db("products");
-			const frutas = await db.collection("frutas").find({"id": id}).toArray();
-			ret = frutas.length !== 0 ? {"results": frutas, "status": 200} : noMatches();
-			console.log(ret);
+			const fruits = await db.collection("fruits").find({"id": id}).toArray();
+			ret = fruits.length !== 0 ? {"result": fruits, "status": 200} : noMatches();
+			
 			await db_connector.disconnect()	;
 		}
 	}
@@ -47,7 +47,7 @@ const getProductById = async id => {
 
 
 const getProductsByPrice = async price => {
-	let ret = {"result": "error", "status": 409, "id": "El precio tiene que ser un número."};
+	let ret = {"result": "error", "status": 409, "description": "El precio tiene que ser un número."};
 	price = parseInt(price);
 
 	if(price) {
@@ -55,9 +55,103 @@ const getProductsByPrice = async price => {
 		ret = connectionFailed;
 		if(client) {
 			const db = client.db("products");
-			const frutas = await db.collection("frutas").find({"importe": {$gte: price} }).toArray();
-			ret = frutas.length !== 0 ? {"results": frutas, "status": 200} : noMatches();
-			console.log(ret);
+			const fruits = await db.collection("fruits").find({"importe": {$gte: price} }).toArray();
+			ret = fruits.length !== 0 ? {"result": fruits, "status": 200} : noMatches();
+			
+			await db_connector.disconnect()	;
+		}
+	}
+		
+	return ret;
+}
+
+const add = async prod => {
+	let ret = undefined;
+	if(hasSameKeys(prod)) {
+		const client = await db_connector.connect();
+		if(client) {
+			const fruitsCollection = client.db("products").collection("fruits");
+			const search = await fruitsCollection.find({nombre: prod.nombre}).toArray();
+
+
+			// Si el prod. NO está en la BD, lo agrego
+			if(search.length === 0) {
+				await fruitsCollection.insertOne(prod);
+				ret = {"result": "Producto agregado", "status": 200};
+			} else 													  
+				ret = {"result": "error", "status": 400, "description": "No se agregó el producto, este ya existe en la base de datos."};
+
+			await db_connector.disconnect();
+		} else {
+			ret = connectionFailed;
+		}
+		
+	} else {
+		ret = {"result": "error", "status": 409, "description": "No se agregó el producto. Formatee correctamente los datos."};
+	}
+	return ret;
+}
+
+const update = async (id, prod) => {
+	let ret = {"result": "error", "status": 409, "description": "El id tiene que ser un número entero positivo."};
+	id = parseInt(id);
+	if(id && id > 0) {
+		if(hasSameKeys(prod)) {
+			const client = await db_connector.connect();
+			if(client) {
+				const fruitsCollection = client.db("products").collection("fruits");
+				const searchForId = await fruitsCollection.findOne({id: id});
+				const searchForName = await fruitsCollection.findOne({nombre: prod.nombre});
+
+				if(searchForId) { 
+					if(searchForName === null) { // No hay otro prod con el mismo nombre
+						await fruitsCollection.updateOne({id: id}, {$set: prod});
+						ret = {"result": "Producto actualizado", "status": 200};
+					} else {
+						ret = {
+							"result": "error",
+					 		"status": 400,
+					        "description": "No se actualizó la BD, el producto que desea actualizar ya se encuentra en la base de datos."
+						};
+					}
+
+				} else {
+					ret = {
+							"result": "error",
+					 		"status": 400,
+					        "description": "No se actualizó la BD, el producto con el id proporcionado no existe."
+					};
+				}
+
+				await db_connector.disconnect();
+			} else {
+				ret = connectionFailed;
+			}
+			
+		} else {
+			ret = {"result": "error", "status": 409, "description": "No se actualzó el producto. Formatee correctamente los datos."};
+		}
+	}
+		
+	return ret;
+}
+
+const remove = async id => {
+	let ret = {"result": "error", "status": 409, "description": "El id tiene que ser un número entero positivo."};
+	id = parseInt(id);
+
+	if(id && id > 0) {
+		const client   = await db_connector.connect();
+		ret = connectionFailed;
+		if(client) {
+			const db = client.db("products");
+			const result = await db.collection("fruits").deleteOne({"id": id});
+
+			if(result.deletedCount !== 0)	
+				ret = {"result": "Producto eliminado.", "status": 200};
+			else
+				ret = {"result": "error", "status": 404, "description": "No se encontró ningún producto con ese ID."};
+
 			await db_connector.disconnect()	;
 		}
 	}
@@ -76,4 +170,4 @@ const hasSameKeys = prod => {
 	 return mandatoryKeys.every((str, index) => str === prodKeys[index]);
 }
 
-module.exports = {add, getProductsByName, getProductById, getProductsByPrice, list, update, remove};
+module.exports = {add, remove, update, getProductsByName, getProductById, getProductsByPrice, list};
