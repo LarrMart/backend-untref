@@ -3,7 +3,7 @@ const express  = require('express');
 const PORT     = process.env.PORT || 3000;
 const app      = express();
 
-app.use(express.json())
+app.use(express.json());
 
 app.get("/frutas/listado", async (req, res) => {
 	const result = await products.list();
@@ -38,6 +38,10 @@ app.put("/frutas/actualizar/:id", async (req, res) => {
 app.delete("/frutas/eliminar/:id", async (req, res) => {
 	const result = await products.remove(req.params.id);
 	res.status(result.status).json(result);
+});
+
+app.all("*", (req, res) => {
+	res.status(404).send("No se encuentra el recurso solicitado");
 });
 
 app.listen(PORT, () => {

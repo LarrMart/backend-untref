@@ -26,11 +26,4 @@ const disconnect = async () => {
 module.exports = {connect, disconnect};
 
 
-// async function execute() {
-// 	await connect();
-// 	disconnect();
-// }
-
-// execute();
-
 

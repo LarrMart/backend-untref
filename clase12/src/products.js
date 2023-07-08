@@ -5,8 +5,8 @@ const list = async () => {
 	const client   = await db_connector.connect();
 	if(client) {
 		const db = client.db("products");
-		const frutas = await db.collection("fruits").find().toArray();
-		ret = {"result": frutas, "status": 200}
+		const fruits = await db.collection("fruits").find().toArray();
+		ret = {"result": fruits, "status": 200}
 		
 		await db_connector.disconnect()	;
 	}
@@ -45,12 +45,11 @@ const getProductById = async id => {
 	return ret;
 }
 
-
 const getProductsByPrice = async price => {
-	let ret = {"result": "error", "status": 409, "description": "El precio tiene que ser un número."};
+	let ret = {"result": "error", "status": 409, "description": "El precio tiene que ser un número positivo."};
 	price = parseInt(price);
 
-	if(price) {
+	if(price > 0) {
 		const client   = await db_connector.connect();
 		ret = connectionFailed;
 		if(client) {
@@ -104,7 +103,7 @@ const update = async (id, prod) => {
 				const searchForName = await fruitsCollection.findOne({nombre: prod.nombre});
 
 				if(searchForId) { 
-					if(searchForName === null) { // No hay otro prod con el mismo nombre
+					if(searchForName === null || searchForName.id === id) { // No hay otro prod con el mismo nombre
 						await fruitsCollection.updateOne({id: id}, {$set: prod});
 						ret = {"result": "Producto actualizado", "status": 200};
 					} else {
