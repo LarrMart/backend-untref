@@ -19,7 +19,7 @@ FROM products;
 
 -- 1.b
 SELECT
-        COUNT(*) AS 'Total productos con precio mayor a 30'
+	COUNT(*) AS 'Total productos con precio mayor a 30'
 
 FROM products
 
@@ -37,19 +37,19 @@ c. agrupa por CategoryID
 */
 
 SELECT
-        categoryID,
-	count(categoryID) AS 'Numero de productos por categoria'
+    categoryID,
+	count(categoryID) AS `Cantidad de productos por categoría`
 
 FROM products
 
 GROUP BY
 	categoryID
-
-HAVING 
-	`Numero de productos por categoria` > 7
+	
+HAVING
+	`Cantidad de productos por categoría` > 7
 
 ORDER BY 
-	`Numero de productos por categoria`;
+	`Cantidad de productos por categoría`;
 
 
 
